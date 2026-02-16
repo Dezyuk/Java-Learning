@@ -1,4 +1,5 @@
-package org.example;
+import org.example.ArrayStats;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -6,7 +7,7 @@ public class ArrayStatsTest {
     @Test
     void testMinMaxAverageMedianOdd() {
         int[] arr = {3, 1, 4, 1, 5};
-        assertEquals(1, ArrayStats.min(arr));
+        Assertions.assertEquals(1, ArrayStats.min(arr));
         assertEquals(5, ArrayStats.max(arr));
         assertEquals((3+1+4+1+5)/5.0, ArrayStats.average(arr));
         assertEquals(3.0, ArrayStats.median(arr));
