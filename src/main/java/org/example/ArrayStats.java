@@ -5,42 +5,36 @@ import java.util.Arrays;
 public class ArrayStats {
 
 
-    public int MIN (int[] arrays) throws Exception {
-        if(arrays.length == 0) throw new Exception("Пустой массив");
-        int min = arrays[0];
-        for (int i = 1; i < arrays.length; i++) {
-            if(min > arrays[i]){
-                min = arrays[i];
-            }
+    private static void validate(int[] arr) {
+        if (arr == null || arr.length == 0) {
+            throw new IllegalArgumentException("Array must not be null or empty");
         }
-        return min;
-    }
-    public int MAX (int[] arrays) throws Exception {
-        if(arrays.length == 0) throw new Exception("Пустой массив");
-        int max = arrays[0];
-        for (int i = 1; i < arrays.length; i++) {
-            if(max < arrays[i]){
-                max = arrays[i];
-            }
-        }
-        return max;
     }
 
-    public float AVERAGE (int[] arrays) throws Exception {
-        if(arrays.length == 0) throw new Exception("Пустой массив");
-        int sum = arrays[0];
-        for (int i = 1; i < arrays.length; i++) {
-            sum += arrays[i];
-        }
-        return (float) sum /arrays.length;
+    public static int min(int[] arr) {
+        validate(arr);
+        return Arrays.stream(arr).min().getAsInt();
     }
 
-    public float MEDIAN (int[] arrays) throws Exception {
-        if(arrays.length == 0) throw new Exception("Пустой массив");
-        Arrays.sort(arrays);
-        if(arrays.length % 2 == 0){
-            return (float) arrays[arrays.length/2];
+    public static int max(int[] arr) {
+        validate(arr);
+        return Arrays.stream(arr).max().getAsInt();
+    }
+
+    public static double average(int[] arr) {
+        validate(arr);
+        return Arrays.stream(arr).average().getAsDouble();
+    }
+
+    public static double median(int[] arr) {
+        validate(arr);
+        int[] copy = Arrays.copyOf(arr, arr.length);
+        Arrays.sort(copy);
+        int n = copy.length;
+        if (n % 2 == 1) {
+            return copy[n / 2];
+        } else {
+            return (copy[n / 2 - 1] + copy[n / 2]) / 2.0;
         }
-        return (float) ((arrays[arrays.length/2] + arrays[(arrays.length/2)+1])/2);
     }
 }
