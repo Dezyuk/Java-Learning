@@ -1,7 +1,7 @@
 package MyListImplementation;
 
 
-public interface MyList {
+public interface MyList extends Iterable<Object>{
 
     /**
      * Appends the specified element to the end of this list (optional

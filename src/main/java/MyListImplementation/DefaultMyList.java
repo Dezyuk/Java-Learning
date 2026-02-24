@@ -1,5 +1,10 @@
 package MyListImplementation;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Spliterator;
+import java.util.function.Consumer;
+
 public class DefaultMyList implements MyList {
     private Node first;
     private Node last;
@@ -52,7 +57,7 @@ public class DefaultMyList implements MyList {
         return false;
     }
 
-    void unlink(Node element) {
+    Object unlink(Node element) {
         Object obj = element.data;
         Node next = element.next;
         Node previous = element.previous;
@@ -72,6 +77,7 @@ public class DefaultMyList implements MyList {
 
         element.data = null;
         size--;
+        return obj;
     }
 
     @Override
@@ -115,7 +121,8 @@ public class DefaultMyList implements MyList {
         for (int i = 0; i < array.length; i++) {
             if (!contains(array[i])) {
                 return false;
-            };
+            }
+            ;
         }
         return true;
     }
@@ -144,6 +151,74 @@ public class DefaultMyList implements MyList {
         return sb.append(']')
                 .append('}')
                 .toString();
+    }
+    public Node getNodeByIndex(int index) {
+        if (index > (size -1)) {
+            return null;
+        }
+
+        if (index < (size >> 1)) {
+            Node x = first;
+            for (int i = 0; i < index; i++) {
+                x = x.next;
+            }
+            return x;
+        } else {
+            Node x = last;
+            for (int i = size - 1; i > index; i--) {
+                x = x.previous;
+            }
+            return x;
+        }
+    }
+    public Object removeNodeByIndex(int index) {
+        return unlink(getNodeByIndex(index));
+
+    }
+
+    private class IteratorImpl implements Iterator<Object> {
+        int cursor = 0;
+        int lastRet = -1;
+        public boolean hasNext() {
+            return cursor != size;
+        }
+
+
+        public Object next() {
+            Object next = getNodeByIndex(cursor);
+            if (next == null) {
+                throw new NoSuchElementException();
+            }
+            lastRet = cursor;
+            cursor += 1;
+            return next;
+        }
+
+        public void remove() {
+            if (lastRet < 0) {
+                throw new IllegalStateException();
+            }
+            DefaultMyList.this.removeNodeByIndex(lastRet);
+            if (lastRet < cursor) {
+                cursor--;
+            }
+            lastRet = -1;
+        }
+    }
+
+    @Override
+    public Iterator<Object> iterator() {
+        return new IteratorImpl();
+    }
+
+    @Override
+    public void forEach(Consumer<? super Object> action) {
+        MyList.super.forEach(action);
+    }
+
+    @Override
+    public Spliterator<Object> spliterator() {
+        return MyList.super.spliterator();
     }
 
     private static class Node {
