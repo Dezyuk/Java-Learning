@@ -1,19 +1,25 @@
-package MyListImplementation;
+package MyListImplementation.parametrized;
 
+
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Spliterator;
-import java.util.function.Consumer;
 
-public class DefaultMyList implements MyList {
-    private Node first;
-    private Node last;
+
+public class DefaultMyListParameterized<T> implements MyListParameterized<T>, ListIterableParameterized<T> {
+    private Node<T> first;
+    private Node<T> last;
     private int size;
 
     @Override
-    public void add(Object e) {
-        final Node lastNode = last;
-        final Node newNode = new Node(lastNode, e, null);
+    public ListIteratorParameterized<T> listIterator() {
+        return new ListIteratorImplParameterized<>();
+    }
+
+    @Override
+    public void add(T e) {
+        final Node<T> lastNode = last;
+        final Node<T> newNode = new Node<T>(lastNode, e, null);
         last = newNode;
         if (lastNode == null) {
             first = newNode;
@@ -25,8 +31,8 @@ public class DefaultMyList implements MyList {
 
     @Override
     public void clear() {
-        for (Node x = first; x != null; ) {
-            Node next = x.next;
+        for (Node<T> x = first; x != null; ) {
+            Node<T> next = x.next;
             x.next = null;
             x.data = null;
             x.previous = null;
@@ -40,14 +46,14 @@ public class DefaultMyList implements MyList {
     @Override
     public boolean remove(Object o) {
         if (o == null) {
-            for (Node x = first; x != null; x = x.next) {
+            for (Node<T> x = first; x != null; x = x.next) {
                 if (x.data == null) {
                     unlink(x);
                     return true;
                 }
             }
         } else {
-            for (Node x = first; x != null; x = x.next) {
+            for (Node<T> x = first; x != null; x = x.next) {
                 if (x.data.equals(o)) {
                     unlink(x);
                     return true;
@@ -57,10 +63,10 @@ public class DefaultMyList implements MyList {
         return false;
     }
 
-    Object unlink(Node element) {
+    Object unlink(Node<T> element) {
         Object obj = element.data;
-        Node next = element.next;
-        Node previous = element.previous;
+        Node<T> next = element.next;
+        Node<T> previous = element.previous;
 
         if (previous == null) {
             first = next;
@@ -84,11 +90,10 @@ public class DefaultMyList implements MyList {
     public Object[] toArray() {
         Object[] objects = new Object[size];
         int i = 0;
-        for (Node x = first; x != null; x = x.next) {
+        for (Node<T> x = first; x != null; x = x.next) {
             objects[i++] = x.data;
         }
         return objects;
-
     }
 
     @Override
@@ -99,13 +104,13 @@ public class DefaultMyList implements MyList {
     @Override
     public boolean contains(Object o) {
         if (o == null) {
-            for (Node x = first; x != null; x = x.next) {
+            for (Node<T> x = first; x != null; x = x.next) {
                 if (x.data == null) {
                     return true;
                 }
             }
         } else {
-            for (Node x = first; x != null; x = x.next) {
+            for (Node<T> x = first; x != null; x = x.next) {
                 if (x.data.equals(o)) {
                     return true;
                 }
@@ -116,7 +121,7 @@ public class DefaultMyList implements MyList {
     }
 
     @Override
-    public boolean containsAll(MyList c) {
+    public boolean containsAll(MyListParameterized<?> c) {
         Object[] array = c.toArray();
         for (int i = 0; i < array.length; i++) {
             if (!contains(array[i])) {
@@ -127,106 +132,14 @@ public class DefaultMyList implements MyList {
         return true;
     }
 
-    @Override
-    public String toString() {
-        if (first == null) {
-            return "{}";
-        }
 
-        StringBuilder sb = new StringBuilder();
-        sb.append('{');
-
-        for (Node x = first; x != null; x = x.next) {
-            sb.append('[')
-                    .append(x.data);
-
-            if (x.next == null) {
-                break;
-            }
-            sb.append(']')
-                    .append(',')
-                    .append(' ');
-        }
-
-        return sb.append(']')
-                .append('}')
-                .toString();
-    }
-    public Node getNodeByIndex(int index) {
-        if (index > (size -1)) {
-            return null;
-        }
-
-        if (index < (size >> 1)) {
-            Node x = first;
-            for (int i = 0; i < index; i++) {
-                x = x.next;
-            }
-            return x;
-        } else {
-            Node x = last;
-            for (int i = size - 1; i > index; i--) {
-                x = x.previous;
-            }
-            return x;
-        }
-    }
-    public Object removeNodeByIndex(int index) {
-        return unlink(getNodeByIndex(index));
-
-    }
-
-    private class IteratorImpl implements Iterator<Object> {
-        int cursor = 0;
-        int lastRet = -1;
-        public boolean hasNext() {
-            return cursor != size;
-        }
+    private static class Node<T> {
+        private Node<T> previous;
+        private T data;
+        private Node<T> next;
 
 
-        public Object next() {
-            Object next = getNodeByIndex(cursor);
-            if (next == null) {
-                throw new NoSuchElementException();
-            }
-            lastRet = cursor;
-            cursor += 1;
-            return next;
-        }
-
-        public void remove() {
-            if (lastRet < 0) {
-                throw new IllegalStateException();
-            }
-            DefaultMyList.this.removeNodeByIndex(lastRet);
-            if (lastRet < cursor) {
-                cursor--;
-            }
-            lastRet = -1;
-        }
-    }
-
-    @Override
-    public Iterator<Object> iterator() {
-        return new IteratorImpl();
-    }
-
-    @Override
-    public void forEach(Consumer<? super Object> action) {
-        MyList.super.forEach(action);
-    }
-
-    @Override
-    public Spliterator<Object> spliterator() {
-        return MyList.super.spliterator();
-    }
-
-    private static class Node {
-        private Node previous;
-        private Object data;
-        private Node next;
-
-        public Node(Node previous, Object data, Node next) {
+        public Node(Node<T> previous, T data, Node<T> next) {
             this.previous = previous;
             this.data = data;
             this.next = next;
@@ -237,4 +150,116 @@ public class DefaultMyList implements MyList {
             return data.toString();
         }
     }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new IteratorImpl<>();
+    }
+
+    public Object removeNodeByIndex(int index) {
+        return unlink(getNodeByIndex(index));
+
+    }
+
+    public Node<T> getNodeByIndex(int index) {
+        if (index > (size - 1)) {
+            return null;
+        }
+
+        if (index < (size >> 1)) {
+            Node<T> x = first;
+            for (int i = 0; i < index; i++) {
+                x = x.next;
+            }
+            return x;
+        } else {
+            Node<T> x = last;
+            for (int i = size - 1; i > index; i--) {
+                x = x.previous;
+            }
+            return x;
+        }
+    }
+
+    private class IteratorImpl<T> implements Iterator<T> {
+
+
+        int cursor = 0;
+        int lastRet = -1;
+
+
+
+        @Override
+        public boolean hasNext() {
+            return cursor != size;
+        }
+
+
+
+
+        @Override
+        public T next() {
+            Node<T> next = (Node<T>) getNodeByIndex(cursor);
+            if (next == null) {
+                throw new NoSuchElementException();
+            }
+            lastRet = cursor;
+            cursor += 1;
+            return next.data;
+        }
+
+
+        @Override
+        public void remove() {
+            if (lastRet < 0) {
+                throw new IllegalStateException();
+            }
+            DefaultMyListParameterized.this.removeNodeByIndex(lastRet);
+            if (lastRet < cursor) {
+                cursor--;
+            }
+            lastRet = -1;
+        }
+
+    }
+
+    private class ListIteratorImplParameterized<T> extends IteratorImpl<T>
+            implements ListIteratorParameterized<T> {
+        @Override
+        public boolean hasPrevious() {
+            return cursor != 0;
+        }
+
+
+        @Override
+        public T previous() {
+            cursor -= 1;
+            Node<T> previous = (Node<T>) getNodeByIndex(cursor);
+            if (previous == null) {
+                cursor = 0;
+                throw new NoSuchElementException();
+            }
+            lastRet = cursor;
+            return previous.data;
+
+        }
+
+
+        @Override
+        public void set(T element) {
+            if (lastRet < 0) {
+                throw new IllegalStateException();
+            }
+            Node<T> x = (Node<T>) getNodeByIndex(lastRet);
+            x.data = element;
+            lastRet = -1;
+        }
+
+
+    }
+
 }
+
+
+
+

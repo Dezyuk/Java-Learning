@@ -1,6 +1,11 @@
-package OOP.BooksManagement;
+package OOP.BooksManagement.services.impl;
 
-public class BookService {
+import OOP.BooksManagement.Author;
+import OOP.BooksManagement.Book;
+import OOP.BooksManagement.Publisher;
+import OOP.BooksManagement.services.BookService;
+
+public class DefaultBookService implements BookService {
     public Book[] filterBooksByAuthor(Author author, Book[] books) {
         if (author == null || books == null) {
             return new Book[0];

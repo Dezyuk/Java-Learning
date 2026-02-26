@@ -1,5 +1,9 @@
 package OOP.BooksManagement;
 
+import OOP.BooksManagement.services.BookService;
+import OOP.BooksManagement.services.impl.DefaultBookService;
+import OOP.BooksManagement.services.impl.StreamsBoolService;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 
@@ -23,7 +27,7 @@ public class Demo {
                         new Publisher(3, "Publisher_3"), 1992, 185,
                         BigDecimal.valueOf(19.99), CoverType.PAPERBACK) };
 
-        BookService bookService = new BookService();
+        BookService bookService = new StreamsBoolService();
         System.out.println(Arrays.toString(
                 bookService.filterBooksByAuthor(new Author(1, "Jon", "Johnson"), books)));
 
