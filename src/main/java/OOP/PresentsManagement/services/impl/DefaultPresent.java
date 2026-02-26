@@ -1,8 +1,11 @@
-package OOP.PresentsManagement;
+package OOP.PresentsManagement.services.impl;
+
+import OOP.PresentsManagement.Sweet;
+import OOP.PresentsManagement.services.Present;
 
 import java.util.Arrays;
 
-public class Present {
+public class DefaultPresent implements Present {
     private static final int DEFAULT_GIFT_CAPACITY = 10;
     private Sweet[] sweets;
     private int lastIndexAdded;

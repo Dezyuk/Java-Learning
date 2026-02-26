@@ -1,5 +1,8 @@
 package OOP.PresentsManagement;
 
+import OOP.PresentsManagement.services.impl.DefaultPresent;
+import OOP.PresentsManagement.services.Present;
+
 import java.util.Arrays;
 
 public class Demo {
@@ -22,7 +25,7 @@ public class Demo {
         lollipop.setName("Lollipop");
         lollipop.setSugarWeight(0.2);
 
-        Present present = new Present();
+        Present present = new DefaultPresent();
         present.addSweet(candy);
         present.addSweet(cookie);
         present.addSweet(lollipop);
