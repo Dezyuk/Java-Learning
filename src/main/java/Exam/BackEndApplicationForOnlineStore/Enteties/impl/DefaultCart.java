@@ -3,64 +3,38 @@ package Exam.BackEndApplicationForOnlineStore.Enteties.impl;
 import Exam.BackEndApplicationForOnlineStore.Enteties.Cart;
 import Exam.BackEndApplicationForOnlineStore.Enteties.Product;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class DefaultCart implements Cart {
-    private static final int DEFAULT_PRODUCT_CAPACITY = 10;
-    private Product[] products;
-    private int lastIndex;
+    private List<Product> products;
 
     {
-        products = new Product[DEFAULT_PRODUCT_CAPACITY];
+        products = new ArrayList<>();
     }
 
     @Override
     public boolean isEmpty() {
-        if (products == null || products.length == 0) {
-            return true;
-        }
-        for (Product product : products) {
-            if (product != null) {
-                return false;
-            }
-        }
-        return true;
+        return products.isEmpty();
     }
 
     @Override
-    public void addProduct(Product productById) {
-        if (productById == null){
+    public void addProduct(Product product) {
+        if (product == null) {
             return;
         }
-        if(products.length <= lastIndex){
-            products = Arrays.copyOf(products, products.length<<1);
-        }
-        products[lastIndex++]=productById;
+        products.add(product);
     }
 
     @Override
-    public Product[] getProducts() {
-        if(products == null){
-            return new Product[0];
-        }
-        int notNullProduct = 0;
-        for (Product product:products){
-            if(product!=null){
-                notNullProduct++;
-            }
-        }
-        Product[] nonNullProducts = new Product[notNullProduct];
-        int index = 0;
-        for (Product product : products) {
-            if (product != null) {
-                nonNullProducts[index++] = product;
-            }
-        }
-        return nonNullProducts;
+    public List<Product> getProducts() {
+//		return Collections.unmodifiableList(this.products); // returns unmodifiable List
+        return this.products;
     }
 
     @Override
     public void clear() {
-        products = new Product[DEFAULT_PRODUCT_CAPACITY];
+        products.clear();
     }
 }

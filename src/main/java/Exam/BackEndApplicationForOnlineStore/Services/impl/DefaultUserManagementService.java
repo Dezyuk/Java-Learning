@@ -1,34 +1,27 @@
 package Exam.BackEndApplicationForOnlineStore.Services.impl;
 
 import Exam.BackEndApplicationForOnlineStore.Enteties.User;
+import Exam.BackEndApplicationForOnlineStore.Enteties.impl.DefaultUser;
 import Exam.BackEndApplicationForOnlineStore.Services.UserManagementService;
+import Exam.BackEndApplicationForOnlineStore.Storage.impl.DefaultUserStoringService;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class DefaultUserManagementService implements UserManagementService {
+
     private static final String NOT_UNIQUE_EMAIL_ERROR_MESSAGE = "This email is already used by another user. Please, use another email";
     private static final String EMPTY_EMAIL_ERROR_MESSAGE = "You have to input email to register. Please, try one more time";
     private static final String NO_ERROR_MESSAGE = "";
-    private static final int DEFAULT_USERS_CAPACITY = 10;
-
-    private User[] users;
-    private int lastIndex;
 
     private static DefaultUserManagementService instance;
+    private static DefaultUserStoringService defaultUserStoringService;
 
-    {
-        users = new User[DEFAULT_USERS_CAPACITY];
+    static {
+        defaultUserStoringService = DefaultUserStoringService.getInstance();
     }
 
-    public DefaultUserManagementService() {
-
-    }
-
-    public static UserManagementService getInstance() {
-        if (instance == null) {
-            instance = new DefaultUserManagementService();
-        }
-        return instance;
+    private DefaultUserManagementService() {
     }
 
     @Override
@@ -42,15 +35,12 @@ public class DefaultUserManagementService implements UserManagementService {
             return errorMessage;
         }
 
-        if (users.length <= lastIndex) {
-            users = Arrays.copyOf(users, users.length << 1);
-        }
-
-        users[lastIndex++] = user;
+        defaultUserStoringService.saveUser(user);
         return NO_ERROR_MESSAGE;
     }
 
     private String checkUniqueEmail(String email) {
+        List<User> users = defaultUserStoringService.loadUsers();
         if (email == null || email.isEmpty()) {
             return EMPTY_EMAIL_ERROR_MESSAGE;
         }
@@ -64,39 +54,30 @@ public class DefaultUserManagementService implements UserManagementService {
         return NO_ERROR_MESSAGE;
     }
 
+    public static UserManagementService getInstance() {
+        if (instance == null) {
+            instance = new DefaultUserManagementService();
+        }
+        return instance;
+    }
+
+
     @Override
-    public User[] getUsers() {
-        if (users == null) {
-            return new User[0];
-        }
-        int notNullUsers = 0;
-        for (User user : users) {
-            if (user != null) {
-                notNullUsers++;
-            }
-        }
-        int index = 0;
-        User[] notNullUser = new User[notNullUsers];
-        for (User user : users) {
-            if (user != null) {
-                notNullUser[index++] = user;
-            }
-        }
-        return notNullUser;
+    public List<User> getUsers() {
+        List<User> users = defaultUserStoringService.loadUsers();
+        DefaultUser.setCounter(users.stream()
+                .mapToInt(user -> user.getId())
+                .max().getAsInt());
+        return users;
     }
 
     @Override
     public User getUserByEmail(String userEmail) {
-        for (User user : users) {
+        for (User user : defaultUserStoringService.loadUsers()) {
             if (user != null && user.getEmail().equalsIgnoreCase(userEmail)) {
                 return user;
             }
         }
         return null;
-    }
-
-    void clearServiceState() {
-        lastIndex = 0;
-        users = new User[DEFAULT_USERS_CAPACITY];
     }
 }

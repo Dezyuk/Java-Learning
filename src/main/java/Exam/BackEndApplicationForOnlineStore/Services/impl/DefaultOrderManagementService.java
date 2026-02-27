@@ -3,19 +3,26 @@ package Exam.BackEndApplicationForOnlineStore.Services.impl;
 import Exam.BackEndApplicationForOnlineStore.Enteties.Order;
 import Exam.BackEndApplicationForOnlineStore.Enteties.User;
 import Exam.BackEndApplicationForOnlineStore.Services.OrderManagementService;
+import Exam.BackEndApplicationForOnlineStore.Storage.OrderStoringService;
+import Exam.BackEndApplicationForOnlineStore.Storage.impl.DefaultOrderStoringService;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class DefaultOrderManagementService implements OrderManagementService {
-    private static final int DEFAULT_ORDER_CAPACITY = 10;
 
 
     private static DefaultOrderManagementService instance;
-    private int lastIndex;
-    private Order[] orders;
+    private List<Order> orders;
+    private OrderStoringService orderStoringService;
 
     {
-        orders = new Order[DEFAULT_ORDER_CAPACITY];
+        orderStoringService = DefaultOrderStoringService.getInstance();
+        orders = orderStoringService.loadOrders();
+
     }
 
     public DefaultOrderManagementService() {
@@ -33,56 +40,28 @@ public class DefaultOrderManagementService implements OrderManagementService {
         if (order == null) {
             return;
         }
-        if (orders.length <= lastIndex) {
-            orders = Arrays.copyOf(orders, orders.length << 1);
-        }
-        orders[lastIndex++] = order;
+        orders.add(order);
+        orderStoringService.saveOrders(orders);
     }
 
     @Override
-    public Order[] getOrdersByUserId(int userId) {
-        int amountOfUserOrders = 0;
-        for (Order order : orders) {
-            if (order != null && order.getCustomerId() == userId) {
-                amountOfUserOrders++;
-            }
-        }
-
-        Order[] userOrders = new Order[amountOfUserOrders];
-
-        int index = 0;
-        for (Order order : orders) {
-            if (order != null && order.getCustomerId() == userId) {
-                userOrders[index++] = order;
-            }
-        }
-
-        return userOrders;
+    public List<Order> getOrdersByUserId(int userId) {
+        return orderStoringService.loadOrders().stream()
+                .filter(Objects::nonNull)
+                .filter(order -> order.getCustomerId() == userId)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Order[] getOrders() {
-        int nonNullOrdersAmount = 0;
-        for (Order order : orders) {
-            if (order != null) {
-                nonNullOrdersAmount++;
-            }
+    public List<Order> getOrders() {
+        if (orders == null || orders.size() == 0) {
+            orders = orderStoringService.loadOrders();
         }
-
-        Order[] nonNullOrders = new Order[nonNullOrdersAmount];
-
-        int index = 0;
-        for (Order order : orders) {
-            if (order != null) {
-                nonNullOrders[index++] = order;
-            }
-        }
-
-        return nonNullOrders;
+        return this.orders;
     }
 
     void clearServiceState() {
-        lastIndex = 0;
-        orders = new Order[DEFAULT_ORDER_CAPACITY];
+
+        orders.clear();
     }
 }

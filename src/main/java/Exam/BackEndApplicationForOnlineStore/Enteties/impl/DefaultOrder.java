@@ -3,30 +3,34 @@ package Exam.BackEndApplicationForOnlineStore.Enteties.impl;
 import Exam.BackEndApplicationForOnlineStore.Enteties.Order;
 import Exam.BackEndApplicationForOnlineStore.Enteties.Product;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class DefaultOrder implements Order {
     private static final int AMOUNT_OF_DIGITS_IN_CREDIT_CARD_NUMBER = 16;
 
+    private String creditCardNumber;
+    private List<Product> products;
     private int customerId;
-    private Product[] products;
-    private String userInput;
 
     @Override
-    public boolean isCreditCardNumberValid(String userInput) {
-        return userInput.toCharArray().length == AMOUNT_OF_DIGITS_IN_CREDIT_CARD_NUMBER && !userInput.contains(" ") && Long.parseLong(userInput) > 0;
+    public boolean isCreditCardNumberValid(String creditCardNumber) {
+        return creditCardNumber.toCharArray().length == AMOUNT_OF_DIGITS_IN_CREDIT_CARD_NUMBER &&
+                !creditCardNumber.contains(" ") && Long.parseLong(creditCardNumber) > 0;
     }
 
     @Override
-    public void setCreditCardNumber(String userInput) {
-        if (userInput == null) {
+    public void setCreditCardNumber(String creditCardNumber) {
+        if (creditCardNumber == null) {
             return;
         }
-        this.userInput = userInput;
+        this.creditCardNumber = creditCardNumber;
     }
 
     @Override
-    public void setProducts(Product[] products) {
-        this.products = products;
+    public void setProducts(List<Product> products) {
+        this.products = new ArrayList<>(products);
     }
 
     @Override
@@ -34,8 +38,16 @@ public class DefaultOrder implements Order {
         this.customerId = customerId;
     }
 
+
     @Override
     public int getCustomerId() {
         return this.customerId;
+    }
+
+    @Override
+    public String toString() {
+        return "Order: customer id - " + this.customerId + "\t" +
+                "credit card number - " + this.creditCardNumber + "\t" +
+                "products - " + this.products;
     }
 }

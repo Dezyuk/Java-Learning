@@ -2,9 +2,11 @@ package Exam.BackEndApplicationForOnlineStore.Services;
 
 import Exam.BackEndApplicationForOnlineStore.Enteties.Order;
 
+import java.util.List;
+
 public interface OrderManagementService {
     void addOrder(Order order);
-    Order[] getOrdersByUserId(int userId);
-    Order[] getOrders();
+    List<Order> getOrdersByUserId(int userId);
+    List<Order> getOrders();
 
 }

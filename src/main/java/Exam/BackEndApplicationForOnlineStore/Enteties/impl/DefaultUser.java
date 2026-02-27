@@ -3,7 +3,7 @@ package Exam.BackEndApplicationForOnlineStore.Enteties.impl;
 import Exam.BackEndApplicationForOnlineStore.Enteties.User;
 
 public class DefaultUser implements User {
-    private static int idIndex = 0;
+    private static int userCounter = 0;
 
     private int id;
     private String firstName;
@@ -12,14 +12,22 @@ public class DefaultUser implements User {
     private String email;
 
     {
-        id = ++idIndex;
+        id = ++userCounter;
     }
 
     public DefaultUser() {
-
     }
 
     public DefaultUser(String firstName, String lastName, String password, String email) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.email = email;
+    }
+
+    public DefaultUser(int id, String firstName, String lastName, String password, String email) {
+        this.id = id;
+        userCounter--; // to keep sequantial id
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
@@ -32,23 +40,26 @@ public class DefaultUser implements User {
     }
 
     @Override
-    public int getId() {
-        return id;
-    }
-
-    @Override
     public String getLastName() {
-        return lastName;
+        return this.lastName;
     }
 
     @Override
     public String getPassword() {
-        return password;
+        return this.password;
     }
 
     @Override
     public String getEmail() {
-        return email;
+        return this.email;
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + this.getId() + "\t\t" +
+                "First Name: " + this.getFirstName() + "\t\t" +
+                "Last Name: " + this.getLastName() + "\t\t" +
+                "Email: " + this.getEmail();
     }
 
     @Override
@@ -60,24 +71,23 @@ public class DefaultUser implements User {
     }
 
     @Override
-    public void setEmail(String email) {
-        if (email == null) {
+    public void setEmail(String newEmail) {
+        if (newEmail == null) {
             return;
         }
-        this.email = email;
+        this.email = newEmail;
     }
 
     @Override
-    public String toString() {
-        return "DefaultUser{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                '}';
+    public int getId() {
+        return this.id;
     }
 
     void clearState() {
-        idIndex = 0;
+        userCounter = 0;
+    }
+
+    public static void setCounter(int updatedCount) {
+        userCounter = updatedCount;
     }
 }

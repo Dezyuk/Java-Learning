@@ -6,6 +6,7 @@ import Exam.BackEndApplicationForOnlineStore.Menu.Menu;
 import Exam.BackEndApplicationForOnlineStore.Services.UserManagementService;
 import Exam.BackEndApplicationForOnlineStore.Services.impl.DefaultUserManagementService;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class CustomerListMenu implements Menu {
@@ -19,15 +20,16 @@ public class CustomerListMenu implements Menu {
     @Override
     public void start() {
         printMenuHeader();
-        User[] users = userManagementService.getUsers();
+        List<User> users = userManagementService.getUsers();
 
-        if (users.length == 0) {
+        if (users == null || users.size() == 0) {
             System.out.println("Unfortunately, there are no customers.");
         } else {
             for (User user : users) {
                 System.out.println(user);
             }
         }
+        context.getMainMenu().start();
     }
 
     @Override

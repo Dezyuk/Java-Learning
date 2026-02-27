@@ -30,8 +30,11 @@ public class SignUpMenu implements Menu {
         System.out.print("Please, enter your password: ");
         String password = sc.next();
         System.out.print("Please, enter your email: ");
-        String email = sc.next();
 
+        sc = new Scanner(System.in);
+        String email = sc.nextLine();
+
+        userManagementService.getUsers(); // this is needed to load all users for proper ID generation
         User user = new DefaultUser(firstName, lastName, password, email);
 
         String errorMessage = userManagementService.registerUser(user);
@@ -41,6 +44,8 @@ public class SignUpMenu implements Menu {
         } else {
             System.out.println(errorMessage);
         }
+
+        context.getMainMenu().start();
     }
 
     @Override

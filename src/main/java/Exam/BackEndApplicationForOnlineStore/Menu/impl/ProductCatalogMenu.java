@@ -7,6 +7,7 @@ import Exam.BackEndApplicationForOnlineStore.Menu.Menu;
 import Exam.BackEndApplicationForOnlineStore.Services.ProductManagementService;
 import Exam.BackEndApplicationForOnlineStore.Services.impl.DefaultProductManagementService;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class ProductCatalogMenu implements Menu {
@@ -78,10 +79,12 @@ public class ProductCatalogMenu implements Menu {
         return userInput;
     }
 
-    private void printProductToConsole(){
-        Product[] products = productManagementService.getProducts();
-        for (Product product:products){
-            System.out.println(product);
+    private void printProductToConsole() {
+        List<Product> products = productManagementService.getProducts();
+        if (products != null) {
+            for (Product product : products) {
+                System.out.println(product);
+            }
         }
     }
 
